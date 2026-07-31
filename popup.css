@@ -1,0 +1,264 @@
+:root {
+    --bg-dark: #121214;
+    --bg-card: rgba(255, 255, 255, 0.05);
+    --bg-unlocked: rgba(255, 215, 0, 0.1);
+    --border-card: rgba(255, 255, 255, 0.08);
+    --border-unlocked: rgba(255, 215, 0, 0.3);
+    --text-primary: #ffffff;
+    --text-secondary: #8e8e93;
+    --accent-gold: #ffd700;
+}
+
+body {
+    width: 320px;
+    margin: 0;
+    padding: 16px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-primary);
+}
+
+h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.game-icon-header {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#achievementList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 24px 16px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.4;
+    border: 1px dashed var(--border-card);
+    border-radius: 12px;
+}
+
+.empty-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+    opacity: 0.6;
+}
+
+/* Progress Bar */
+.progress-container {
+    padding: 4px 4px 12px 4px;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+.progress-bar-bg {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ffd700, #ff8c00);
+    border-radius: 3px;
+    transition: width 0.6s cubic-bezier(0.1, 0.8, 0.25, 1);
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+}
+
+/* Achievement Cards */
+.achievement {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.achievement:hover {
+    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.achievement.unlocked {
+    background: var(--bg-unlocked);
+    border-color: var(--border-unlocked);
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.05);
+}
+
+.achievement-icon-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 18px;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.achievement.unlocked .achievement-icon-badge {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 140, 0, 0.2));
+    box-shadow: 0 0 6px rgba(255, 215, 0, 0.2);
+}
+
+.achievement-icon-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.3s ease;
+}
+
+.achievement-icon-image.locked {
+    filter: grayscale(100%) opacity(0.4);
+}
+
+.achievement-details {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-right: 24px; /* Make space for delete button */
+}
+
+.name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.achievement.unlocked .name {
+    color: var(--accent-gold);
+}
+
+.description {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.3;
+}
+
+.delete-achievement-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 18px;
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    line-height: 1;
+    padding: 0;
+}
+
+.delete-achievement-btn:hover {
+    background: rgba(255, 69, 58, 0.15);
+    color: #ff453a;
+}
+
+.settings-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 2px 4px 12px 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 12px;
+}
+
+.settings-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Toggle Switch Styling */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 34px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.08);
+    transition: .3s;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 2px;
+    bottom: 2px;
+    background-color: #a0a0a0;
+    transition: .3s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: rgba(255, 215, 0, 0.2);
+    border-color: rgba(255, 215, 0, 0.4);
+}
+
+input:checked + .slider:before {
+    transform: translateX(14px);
+    background-color: var(--accent-gold);
+    box-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
+}

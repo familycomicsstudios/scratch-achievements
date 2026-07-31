@@ -41,5 +41,19 @@
         "https://turbowarp.org/*"
       ]
     }
-  ]
+  ],
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Scratch Achievements",
+    "default_icon": "logo.png"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "icons": {
+    "16": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
+  }
 }
