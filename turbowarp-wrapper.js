@@ -94,12 +94,32 @@ style.textContent = `
 document.head.appendChild(style);
 
 let toastContainer = null;
+
+function getFullscreenElement() {
+    return document.fullscreenElement
+        || document.webkitFullscreenElement
+        || document.mozFullScreenElement
+        || document.msFullscreenElement
+        || null;
+}
+
+function ensureToastContainerParent() {
+    if (!toastContainer) return;
+    const target = getFullscreenElement() || document.body;
+    if (toastContainer.parentElement !== target) {
+        target.appendChild(toastContainer);
+    }
+}
+
 function getToastContainer() {
     if (!toastContainer) {
         toastContainer = document.createElement("div");
         toastContainer.className = "scratch-achievements-container";
         document.body.appendChild(toastContainer);
+        document.addEventListener("fullscreenchange", ensureToastContainerParent);
+        document.addEventListener("webkitfullscreenchange", ensureToastContainerParent);
     }
+    ensureToastContainerParent();
     return toastContainer;
 }
 
@@ -211,8 +231,12 @@ function startEngine(set, unlocked) {
         activeEngine = new window.AchievementEngine(window.vm, set.achievements, {
             unlocked: engineUnlocked,
             onUnlock: (id, achievement) => {
-                if (!sessionPopupsShown.has(id)) {
-                    sessionPopupsShown.add(id);
+                const wasCollected = activeUnlocked.includes(id);
+                const shouldShowPopup = !wasCollected
+                    || (currentShowAlerts && !sessionPopupsShown.has(id));
+
+                if (shouldShowPopup) {
+                    if (wasCollected) sessionPopupsShown.add(id);
                     showAchievementModal(achievement);
                 }
                 window.postMessage({
@@ -256,9 +280,14 @@ window.addEventListener("message", (event) => {
 
     if (event.data.type === "SCRATCH_ACHIEVEMENT_UNLOCKED_CHANGED") {
         const { unlocked } = event.data;
+        const removed = activeUnlocked.filter(id => !unlocked.includes(id));
         activeUnlocked = unlocked;
         if (activeEngine) {
             console.log("Active engine unlocked achievements list synchronized:", unlocked);
+            for (const id of removed) {
+                activeEngine.unlocked.delete(id);
+                sessionPopupsShown.delete(id);
+            }
             if (currentShowAlerts) {
                 activeEngine.unlocked = new Set([...unlocked, ...activeEngine.unlocked]);
             } else {
