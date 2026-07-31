@@ -223,6 +223,14 @@
                             "operator": "==",
                             "value": 2
                         }
+                    },
+                    {
+                        "variable": {
+                            "targetIndex": 0,
+                            "variableId": "[Z%U_lP@yxj/{!v;R;sU",
+                            "operator": ">=",
+                            "value": 10
+                        }
                     }
                 ]
             }
@@ -249,6 +257,14 @@
                             "variableId": "`ry3}:Cl|4?t9XIKgjXl",
                             "operator": "==",
                             "value": 3
+                        }
+                    },
+                    {
+                        "variable": {
+                            "targetIndex": 0,
+                            "variableId": "[Z%U_lP@yxj/{!v;R;sU",
+                            "operator": ">=",
+                            "value": 10
                         }
                     }
                 ]
@@ -277,6 +293,14 @@
                             "operator": "==",
                             "value": 4
                         }
+                    },
+                    {
+                        "variable": {
+                            "targetIndex": 0,
+                            "variableId": "[Z%U_lP@yxj/{!v;R;sU",
+                            "operator": ">=",
+                            "value": 10
+                        }
                     }
                 ]
             }
@@ -303,6 +327,14 @@
                             "variableId": "`ry3}:Cl|4?t9XIKgjXl",
                             "operator": "==",
                             "value": 5
+                        }
+                    },
+                    {
+                        "variable": {
+                            "targetIndex": 0,
+                            "variableId": "[Z%U_lP@yxj/{!v;R;sU",
+                            "operator": ">=",
+                            "value": 10
                         }
                     }
                 ]
@@ -331,6 +363,14 @@
                             "operator": "==",
                             "value": 6
                         }
+                    },
+                    {
+                        "variable": {
+                            "targetIndex": 0,
+                            "variableId": "[Z%U_lP@yxj/{!v;R;sU",
+                            "operator": ">=",
+                            "value": 10
+                        }
                     }
                 ]
             }
@@ -357,6 +397,14 @@
                             "variableId": "`ry3}:Cl|4?t9XIKgjXl",
                             "operator": "==",
                             "value": 7
+                        }
+                    },
+                    {
+                        "variable": {
+                            "targetIndex": 0,
+                            "variableId": "[Z%U_lP@yxj/{!v;R;sU",
+                            "operator": ">=",
+                            "value": 10
                         }
                     }
                 ]
@@ -385,6 +433,14 @@
                             "operator": "==",
                             "value": 8
                         }
+                    },
+                    {
+                        "variable": {
+                            "targetIndex": 0,
+                            "variableId": "[Z%U_lP@yxj/{!v;R;sU",
+                            "operator": ">=",
+                            "value": 10
+                        }
                     }
                 ]
             }
@@ -412,6 +468,14 @@
                             "operator": "==",
                             "value": 9
                         }
+                    },
+                    {
+                        "variable": {
+                            "targetIndex": 0,
+                            "variableId": "[Z%U_lP@yxj/{!v;R;sU",
+                            "operator": ">=",
+                            "value": 10
+                        }
                     }
                 ]
             }
@@ -437,6 +501,14 @@
                             "targetIndex": 0,
                             "variableId": "`ry3}:Cl|4?t9XIKgjXl",
                             "operator": "==",
+                            "value": 10
+                        }
+                    },
+                    {
+                        "variable": {
+                            "targetIndex": 0,
+                            "variableId": "[Z%U_lP@yxj/{!v;R;sU",
+                            "operator": ">=",
                             "value": 10
                         }
                     }
