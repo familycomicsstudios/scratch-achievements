@@ -88,7 +88,10 @@ function waitForVM() {
             id,
             achievement
         ) => {
-            showAchievementModal(achievement);
+
+            showAchievementModal(
+                achievement
+            );
 
             window.postMessage({
                 type: "SCRATCH_ACHIEVEMENT_UNLOCKED",
@@ -97,6 +100,7 @@ function waitForVM() {
                     name: achievement.name
                 }
             });
+
         };
 
 
