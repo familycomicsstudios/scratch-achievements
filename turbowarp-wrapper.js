@@ -181,6 +181,7 @@ let activeEngine = null;
 let activeSet = null;
 let activeUnlocked = [];
 let currentShowAlerts = false;
+const sessionPopupsShown = new Set();
 
 function startEngine(set, unlocked) {
     activeSet = set;
@@ -210,7 +211,10 @@ function startEngine(set, unlocked) {
         activeEngine = new window.AchievementEngine(window.vm, set.achievements, {
             unlocked: engineUnlocked,
             onUnlock: (id, achievement) => {
-                showAchievementModal(achievement);
+                if (!sessionPopupsShown.has(id)) {
+                    sessionPopupsShown.add(id);
+                    showAchievementModal(achievement);
+                }
                 window.postMessage({
                     type: "SCRATCH_ACHIEVEMENT_UNLOCKED",
                     achievementId: id,
@@ -229,7 +233,8 @@ window.addEventListener("message", (event) => {
     if (event.data.type === "SCRATCH_ACHIEVEMENT_SET_LOADED") {
         const { set, unlocked, showAlertsForUnlocked } = event.data;
         currentShowAlerts = !!showAlertsForUnlocked;
-        
+        sessionPopupsShown.clear();
+
         showSetStatusModal(
             `Loaded achievements for <b>${escapeHTML(set.gameName)}</b> (${Object.keys(set.achievements).length} total)`,
             true,
@@ -254,7 +259,11 @@ window.addEventListener("message", (event) => {
         activeUnlocked = unlocked;
         if (activeEngine) {
             console.log("Active engine unlocked achievements list synchronized:", unlocked);
-            activeEngine.unlocked = new Set(currentShowAlerts ? [] : unlocked);
+            if (currentShowAlerts) {
+                activeEngine.unlocked = new Set([...unlocked, ...activeEngine.unlocked]);
+            } else {
+                activeEngine.unlocked = new Set(unlocked);
+            }
         }
     }
 
