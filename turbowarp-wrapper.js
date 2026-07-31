@@ -1,130 +1,50 @@
-const achievements = {
-    "new_level_test": {
-        name: "New Level Started",
+function getProjectID() {
+    const path = window.location.pathname;
 
-        event: {
-            type: "broadcast",
-            value: "EDIT - New Level"
-        },
+    // TurboWarp URLs:
+    // /123456789
+    // /editor?project_url=...
+    const match = path.match(/\/(\d+)/);
 
-        condition: {
-            AND: []
-        }
-    },
-
-
-    "apple_master": {
-        name: "Apple Master",
-
-        event: "continuous",
-
-        condition: {
-            AND: [
-                {
-                    variable: {
-                        targetIndex: 0,
-                        variableId: "^I!}0)g@vH/C.EQ,Eg.%",
-                        operator: ">=",
-                        value: 10
-                    }
-                }
-            ]
-        }
+    if (!match) {
+        return null;
     }
-};
 
-
-
-function showAchievementModal(achievement) {
-
-    const modal = document.createElement("div");
-
-    modal.innerHTML = `
-        <div>
-            🏆 Achievement Unlocked!
-            <br>
-            ${achievement.name}
-        </div>
-    `;
-
-    Object.assign(modal.style, {
-        position: "fixed",
-        top: "20px",
-        right: "20px",
-        padding: "20px",
-        background: "#222",
-        color: "white",
-        borderRadius: "10px",
-        zIndex: 999999
-    });
-
-    document.body.appendChild(modal);
-
-
-    setTimeout(() => {
-        modal.remove();
-    }, 3000);
+    return match[1];
 }
 
 
+async function loadAchievementSet(projectID) {
 
-function waitForVM() {
+    const url = fetch(
+        chrome.runtime.getURL(`sets/${projectID}.json`)
+    )
 
-    const interval = setInterval(() => {
+    const response = await fetch(url);
 
-        if (!window.vm) return;
-
-
-        clearInterval(interval);
-
-
-        const engine = new AchievementEngine(
-            window.vm,
-            achievements
+    if (!response.ok) {
+        throw new Error(
+            `No achievement set found for ${projectID}`
         );
+    }
 
-
-        engine.onUnlock = (
-            id,
-            achievement
-        ) => {
-
-            showAchievementModal(
-                achievement
-            );
-
-            window.postMessage({
-                type: "SCRATCH_ACHIEVEMENT_UNLOCKED",
-                achievement: {
-                    id,
-                    name: achievement.name
-                }
-            });
-
-        };
-
-
-        engine.start();
-
-
-    }, 100);
-
+    return await response.json();
 }
 
-function showAchievementModal(achievement) {
+function showSetStatusModal(message, success = false) {
     const modal = document.createElement("div");
 
     modal.innerHTML = `
         <div style="
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 8px;
+            font-size:20px;
+            font-weight:bold;
+            margin-bottom:8px;
         ">
-            🏆 Achievement Unlocked!
+            🏆 Scratch Achievements
         </div>
 
         <div>
-            ${achievement.name}
+            ${message}
         </div>
     `;
 
@@ -141,28 +61,28 @@ function showAchievementModal(achievement) {
 
         fontFamily: "Arial, sans-serif",
 
-        boxShadow: "0 4px 15px rgba(0,0,0,0.4)",
+        boxShadow:
+            "0 4px 15px rgba(0,0,0,0.4)",
 
         zIndex: "999999",
 
         opacity: "0",
         transform: "translateY(20px)",
 
-        transition: "opacity 0.3s ease, transform 0.3s ease"
+        transition:
+            "opacity .3s ease, transform .3s ease"
     });
 
 
     document.body.appendChild(modal);
 
 
-    // Animate in
     requestAnimationFrame(() => {
         modal.style.opacity = "1";
         modal.style.transform = "translateY(0)";
     });
 
 
-    // Remove after 4 seconds
     setTimeout(() => {
 
         modal.style.opacity = "0";
@@ -172,7 +92,125 @@ function showAchievementModal(achievement) {
             modal.remove();
         }, 300);
 
-    }, 4000);
+    }, 5000);
+}
+
+
+
+function showAchievementModal(achievement) {
+
+    const modal = document.createElement("div");
+
+    modal.innerHTML = `
+        <div style="
+            font-size:20px;
+            font-weight:bold;
+            margin-bottom:8px;
+        ">
+            🏆 Achievement Unlocked!
+        </div>
+
+        <div>
+            ${achievement.name}
+        </div>
+    `;
+
+
+    Object.assign(modal.style, {
+
+        position: "fixed",
+        left: "20px",
+        bottom: "20px",
+
+        background:"#222",
+        color:"#fff",
+
+        padding:"16px 20px",
+        borderRadius:"12px",
+
+        fontFamily:"Arial",
+
+        boxShadow:
+            "0 4px 15px rgba(0,0,0,.4)",
+
+        zIndex:999999,
+
+        opacity:"0",
+        transform:"translateY(20px)",
+
+        transition:
+            "opacity .3s, transform .3s"
+
+    });
+
+
+    document.body.appendChild(modal);
+
+
+    requestAnimationFrame(() => {
+        modal.style.opacity="1";
+        modal.style.transform="translateY(0)";
+    });
+
+
+    setTimeout(() => {
+
+        modal.style.opacity="0";
+        modal.style.transform="translateY(20px)";
+
+
+        setTimeout(() => {
+            modal.remove();
+        },300);
+
+    },4000);
+}
+
+
+
+async function waitForVM() {
+
+    window.addEventListener("message", event => {
+
+        if (event.data.type === "SCRATCH_ACHIEVEMENT_SET_LOADED") {
+
+            const set = event.data.set;
+
+            showSetStatusModal(
+                `Achievement set found:<br>
+                <b>${set.gameName}</b><br>
+                ${Object.keys(set.achievements).length} achievements`
+            );
+
+
+            const engine = new AchievementEngine(
+                window.vm,
+                set.achievements
+            );
+
+
+            engine.onUnlock = (
+                id,
+                achievement
+            ) => {
+                showAchievementModal(achievement);
+            };
+
+
+            engine.start();
+        }
+
+
+        if (event.data.type === "SCRATCH_ACHIEVEMENT_SET_STATUS") {
+
+            showSetStatusModal(
+                "No achievement set found."
+            );
+
+        }
+
+    });
+
 }
 
 

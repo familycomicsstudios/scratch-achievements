@@ -1,0 +1,36 @@
+{
+    "gameName": "Appel",
+    "achievements": {
+        "new_level_test": {
+            "name": "New Level Started",
+
+            "event": {
+                "type": "broadcast",
+                "value": "EDIT - New Level"
+            },
+
+            "condition": {
+                "AND": []
+            }
+        },
+
+        "apple_master": {
+            "name": "Apple Master",
+
+            "event": "continuous",
+
+            "condition": {
+                "AND": [
+                    {
+                        "variable": {
+                            "targetIndex": 0,
+                            "variableId": "^I!}0)g@vH/C.EQ,Eg.%",
+                            "operator": ">=",
+                            "value": 10
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

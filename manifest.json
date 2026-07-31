@@ -15,11 +15,31 @@
         "https://turbowarp.org/*"
       ],
       "js": [
+        "loader.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://turbowarp.org/*"
+      ],
+      "js": [
         "achievement-engine.js",
         "turbowarp-wrapper.js"
       ],
       "world": "MAIN",
       "run_at": "document_idle"
+    }
+  ],
+
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "sets/*.json"
+      ],
+      "matches": [
+        "https://turbowarp.org/*"
+      ]
     }
   ]
 }
