@@ -1,92 +1,230 @@
-// Example achievement database
 const achievements = {
-    "first_apples": {
-        name: "Apple Collector",
-        targetIndex: 0, // Stage
-        variableId: "^I!}0)g@vH/C.EQ,Eg.%", // Apples
+    "new_level_test": {
+        name: "New Level Started",
+
+        event: {
+            type: "broadcast",
+            value: "EDIT - New Level"
+        },
+
         condition: {
-            operator: ">=",
-            value: 10
+            AND: []
         }
     },
 
-    "hundred_apples": {
-        name: "Apple Hoarder",
-        targetIndex: 0,
-        variableId: "^I!}0)g@vH/C.EQ,Eg.%",
-        condition: {
-            operator: ">=",
-            value: 100
-        }
-    },
+    "apple_master": {
+        name: "Apple Master",
 
-    "back_to_level_select": {
-        name: "Back to Level Select",
-        targetIndex: 0,
-        variableId: "tN?,)+jkOy8Zj==YZeC1",
+        event: "continuous",
+
         condition: {
-            operator: "==",
-            value: true
+            AND: [
+                {
+                    variable: {
+                        targetIndex: 0,
+                        variableId: "^I!}0)g@vH/C.EQ,Eg.%",
+                        operator: ">=",
+                        value: 10
+                    }
+                }
+            ]
         }
     }
 };
 
+
+const unlocked = new Set();
+const receivedBroadcasts = new Set();
+
+
 function compare(a, operator, b) {
     switch (operator) {
         case "==": return a == b;
-        case "===": return a === b;
         case "!=": return a != b;
-        case "!==": return a !== b;
         case ">": return a > b;
         case ">=": return a >= b;
         case "<": return a < b;
         case "<=": return a <= b;
-        default:
-            console.error("Unknown operator:", operator);
-            return false;
+        default: return false;
     }
 }
 
-function watchAchievements(vm) {
-    const unlocked = new Set();
 
-    setInterval(() => {
-        for (const [id, achievement] of Object.entries(achievements)) {
+function evaluateCondition(vm, condition) {
 
-            if (unlocked.has(id)) continue;
+    // AND group
+    if (condition.AND) {
+        return condition.AND.every(
+            child => evaluateCondition(vm, child)
+        );
+    }
 
-            const target = vm.runtime.targets[achievement.targetIndex];
-            if (!target) continue;
 
-            const variable = target.variables[achievement.variableId];
-            if (!variable) continue;
+    // OR group
+    if (condition.OR) {
+        return condition.OR.some(
+            child => evaluateCondition(vm, child)
+        );
+    }
 
-            if (
-                compare(
-                    variable.value,
-                    achievement.condition.operator,
-                    achievement.condition.value
-                )
-            ) {
-                unlocked.add(id);
 
-                console.log(
-                    `🏆 Achievement Unlocked: ${achievement.name}`
-                );
-            }
-        }
-    }, 16);
+    // Variable condition
+    if (condition.variable) {
+        const c = condition.variable;
+
+        const target =
+            vm.runtime.targets[c.targetIndex];
+
+        if (!target) return false;
+
+
+        const variable =
+            target.variables[c.variableId];
+
+        if (!variable) return false;
+
+
+        return compare(
+            variable.value,
+            c.operator,
+            c.value
+        );
+    }
+
+
+    // Broadcast condition
+    if (condition.broadcast) {
+        return receivedBroadcasts.has(
+            condition.broadcast
+        );
+    }
+
+
+    return false;
 }
 
+
+function unlockAchievement(id) {
+    if (unlocked.has(id)) return;
+
+    unlocked.add(id);
+
+    console.log(
+        `🏆 Achievement Unlocked: ${achievements[id].name}`
+    );
+
+    window.postMessage({
+        type: "SCRATCH_ACHIEVEMENT_UNLOCKED",
+        achievement: {
+            id: id,
+            name: achievements[id].name
+        }
+    });
+}
+
+
+function checkAchievement(vm, id) {
+    const achievement = achievements[id];
+
+    if (unlocked.has(id)) return;
+
+
+    if (evaluateCondition(vm, achievement.condition)) {
+        unlockAchievement(id);
+    }
+}
+
+
+function checkContinuousAchievements(vm) {
+    for (const [id, achievement] of Object.entries(achievements)) {
+
+        if (achievement.event === "continuous") {
+            checkAchievement(vm, id);
+        }
+
+    }
+}
+
+
+function handleBroadcast(vm, broadcastName) {
+
+    receivedBroadcasts.add(broadcastName);
+
+
+    for (const [id, achievement] of Object.entries(achievements)) {
+
+        if (
+            achievement.event &&
+            achievement.event.type === "broadcast" &&
+            achievement.event.value === broadcastName
+        ) {
+            checkAchievement(vm, id);
+        }
+
+    }
+}
+
+
+function hookEvents(vm) {
+
+    const runtime = vm.runtime;
+
+    const originalStartHats =
+        runtime.startHats.bind(runtime);
+
+
+    runtime.startHats = function(
+        hat,
+        fields,
+        target
+    ) {
+
+        if (
+            hat === "event_whenbroadcastreceived" &&
+            fields?.BROADCAST_OPTION
+        ) {
+            handleBroadcast(
+                vm,
+                fields.BROADCAST_OPTION
+            );
+        }
+
+
+        return originalStartHats(
+            hat,
+            fields,
+            target
+        );
+    };
+}
+
+
+function start(vm) {
+
+    hookEvents(vm);
+
+
+    setInterval(() => {
+        checkContinuousAchievements(vm);
+    }, 16);
+
+}
+
+
 function waitForVM() {
+
     const interval = setInterval(() => {
+
         if (!window.vm) return;
+
 
         clearInterval(interval);
 
-        console.log("VM found!");
-        watchAchievements(window.vm);
+        start(window.vm);
+
     }, 100);
+
 }
+
 
 waitForVM();
