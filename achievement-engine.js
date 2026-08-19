@@ -62,6 +62,17 @@ class AchievementEngine {
             );
         }
 
+        if (condition.listcontains) {
+            const c = condition.listcontains;
+            const target = this.vm.runtime.targets[c.targetIndex];
+            if (!target) return false;
+
+            const list = target.variables[c.listId];
+            if (!list) return false;
+
+            return list.value.includes(c.value);
+        }
+
         return false;
     }
 
